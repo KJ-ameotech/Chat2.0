@@ -1,5 +1,6 @@
 
 from pathlib import Path
+from django.contrib import admin
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,6 +25,7 @@ CORS_ALLOWED_ORIGINS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'daphne',
     'channels',
     'django.contrib.admin',
@@ -37,7 +39,6 @@ INSTALLED_APPS = [
     'corsheaders',
     
 ]
-
 ASGI_APPLICATION = 'wechatpp.asgi.application' 
 
 CHANNEL_LAYERS = {
@@ -85,21 +86,10 @@ WSGI_APPLICATION = 'wechatpp.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',  
-        'NAME': 'defaultdb',  
-        'USER': 'vultradmin',  
-        'PASSWORD': 'AVNS_GT6ryx2WQ_afIxQgt-k', 
-        'HOST': 'vultr-prod-8e382329-6541-405e-83e4-5355cd977b88-vultr-prod-5d43.vultrdb.com', 
-        'PORT': '16751', 
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -179,3 +169,12 @@ CORS_ALLOW_HEADERS = [
     "x-csrftoken",
     "x-requested-with",
 ]
+
+class CustomAdminSite(admin.AdminSite):
+    site_header = "Ameotech Admin" 
+custom_admin_site = CustomAdminSite()
+
+
+JAZZMIN_SETTINGS = {
+    "site_logo": "img/your_logo.png",
+}
