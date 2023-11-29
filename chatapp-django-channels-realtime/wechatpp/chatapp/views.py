@@ -7,23 +7,36 @@ from .models import Room
 from .serializers import RoomSerializer, MessageSerializer
 from django.http import Http404
 from django.db.models import Q
+from collections import defaultdict
 def rooms(request):
     rooms=Room.objects.all()
     return render(request, "rooms.html",{"rooms":rooms})
 
 def room(request,slug):
-    room_name=Room.objects.get(slug=slug).name
-    messages=Message.objects.filter(room=Room.objects.get(slug=slug))
-    
-    return render(request, "room.html",{"room_name":room_name,"slug":slug,'messages':messages})
+    try:
+        room_name=Room.objects.get(slug=slug).name
+        messages=Message.objects.filter(room=Room.objects.get(slug=slug))
+        return render(request, "room.html",{"room_name":room_name,"slug":slug,'messages':messages})
+    except:
+        return render(request, "room.html")
 class RoomList(APIView):
     """
     List all rooms or create a new room.
     """
     def get(self, request, format=None):
-        rooms = Room.objects.all()
-        serializer = RoomSerializer(rooms, many=True)
-        return Response(serializer.data)
+        response = {'status': False}
+        user_id = request.GET.get('user_id', None)
+        if user_id:
+            messages = Message.objects.filter(Q(other_user=user_id) & Q(read_message=False))
+            user_msg_counts = defaultdict(int)
+            for msg in messages:
+                user_msg_counts[msg.user] += 1
+            user_msgs = [{'id': id, 'count': count} for id, count in user_msg_counts.items()]
+            if len(messages) > 0:
+                response['status'] = True
+                response['total_msgs'] = len(messages)
+                response['user_msgs'] = user_msgs
+        return Response(response)
 
     def post(self, request, format=None):
         # Deserialize the request data using your RoomSerializer
