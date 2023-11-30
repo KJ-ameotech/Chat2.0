@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'chatapp',
     'rest_framework',
     'corsheaders',
-    
 ]
 ASGI_APPLICATION = 'wechatpp.asgi.application' 
 
